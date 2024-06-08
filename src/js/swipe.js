@@ -1,12 +1,16 @@
 import Carousel from "./carousel.js";
 
-class SwipeCarousel extends Carousel {
-  constructor(...args) {
-    super(...args);
+function SwipeCarousel(params) {
+  Carousel.call(this, params)
   }
 
-  _initListeners() {
-    super._initListeners(); 
+  SwipeCarousel.prototype = Object.create(Carousel.prototype);
+  SwipeCarousel.prototype.constructor = SwipeCarousel;
+
+  SwipeCarousel.prototype._initProps = Carousel.prototype._initProps;
+  
+  SwipeCarousel.prototype._initListeners = function () {
+    Carousel.prototype._initListeners.call(this);
     
     document.addEventListener('touchstart', this._swipeStartHandler.bind(this));
     document.addEventListener('touchend', this._swipeEndHandler.bind(this));
@@ -15,15 +19,15 @@ class SwipeCarousel extends Carousel {
     document.addEventListener('mousemove', this._swipeMoveHandler.bind(this));
   }
 
-  _isTouchEvent(e) {
+  SwipeCarousel.prototype._isTouchEvent = function (e) {
     return e.type.startsWith('touch');
   }
 
-  _getEventX(e) {
+  SwipeCarousel.prototype._getEventX = function (e) {
     return this._isTouchEvent(e) ? e.changedTouches[0].pageX : e.pageX;
   }
 
-  _swipeStartHandler(e) {
+  SwipeCarousel.prototype._swipeStartHandler = function (e) {
     if (!this._isTouchEvent(e) && e.button !== 0) return;
     if (this.isSwiping) return;
 
@@ -31,7 +35,7 @@ class SwipeCarousel extends Carousel {
     this.isSwiping = true;
   }
 
-  _swipeEndHandler(e) {
+  SwipeCarousel.prototype._swipeEndHandler = function (e) {
     if (!this.isSwiping) return;
 
     const target = e.target || e.srcElement;
@@ -53,15 +57,14 @@ class SwipeCarousel extends Carousel {
     }
   }
 
-  _swipeMoveHandler(e) {
+  SwipeCarousel.prototype._swipeMoveHandler = function (e) {
     if (!this.isSwiping) return;
     e.preventDefault(); 
   }
 
-  init() {
-    super.init(); 
+  SwipeCarousel.prototype.init = function () {
+    Carousel.prototype.init.call(this);
     this._initListeners(); 
   }
-}
 
 export default SwipeCarousel;
